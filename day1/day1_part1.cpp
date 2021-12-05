@@ -8,7 +8,6 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
