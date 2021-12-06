@@ -1,10 +1,12 @@
 /**
  * Advent of Code 2021
- * Day 2 - Part 1
+ * Day 2 - Part 2
  * 
  * Given a list of movement instructions, track the horizontal and vertical 
- * position (depth) of a submarine.  Print out the value of the horizontal
- * position multiplied by the vertical position.
+ * position (depth) of a submarine.  This implementation differs from part 1
+ * in that the up/down instructions modify an attack angle (aim) parameter
+ * instead of depth.  Print out the value of the horizontal position
+ * multiplied by the vertical position.
  */
 #include <cstdlib>
 #include <fstream>
@@ -17,7 +19,7 @@ int main(int argc, char *argv[])
 {
     if(argc != 2)
     {
-        std::cout << "Usage: day2_part1 <input>" << std::endl;
+        std::cout << "Usage: day2_part2 <input>" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -25,6 +27,7 @@ int main(int argc, char *argv[])
     std::string instruction;
     int horizontal_pos = 0;
     int depth = 0;
+    int aim = 0;
 
     typedef std::vector<std::string> splitvec;
 
@@ -44,17 +47,19 @@ int main(int argc, char *argv[])
         if(direction == "forward")
         {
             horizontal_pos += magnitude;
+            depth += magnitude * aim;
         }
         else if(direction == "up")
         {
-            depth -= magnitude;
+            aim -= magnitude;
         }
         else if(direction == "down")
         {
-            depth += magnitude;
+            aim += magnitude;
         }
 
         std::cout << "horizontal position: " << horizontal_pos << std::endl;
+        std::cout << "aim: " << aim << std::endl;
         std::cout << "depth: " << depth << std::endl;
     }
     ifs.close();
