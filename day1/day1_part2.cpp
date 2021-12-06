@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 {
     if(argc != 2)
     {
-        std::cout << "Usage: day1a <input>" << std::endl;
+        std::cout << "Usage: day1_part2 <input>" << std::endl;
         return EXIT_FAILURE;
     }
 
