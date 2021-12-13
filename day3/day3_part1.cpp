@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     //  (and a zero in the epsilon rate)
     int num_lines = 0;
 
-    //  Read the input file one line at  time
+    //  Read the input file one line at a time
     while(std::getline(ifs, line))
     {
         std::cout << line << std::endl;
