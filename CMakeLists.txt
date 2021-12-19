@@ -19,3 +19,4 @@ add_executable(lb_test day4/LotteryBoard_test.cpp)
 target_link_libraries(lb_test
     boost_unit_test_framework)
 add_executable(day4_part1 day4/day4_part1.cpp)
+add_executable(day4_part2 day4/day4_part2.cpp)
