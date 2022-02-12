@@ -1,14 +1,16 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(advent_of_code_2021)
+enable_testing()
 
 find_package(Boost 1.71 REQUIRED COMPONENTS regex unit_test_framework)
 include_directories(${Boost_INCLUDE_DIRS})
 
 set(CMAKE_CXX_FLAGS "-std=c++11 -Wall -g")
 
-add_executable(day1_part1 day1/day1_part1.cpp)
-add_executable(day1_part2 day1/day1_part2.cpp)
+add_executable(day1 day1.cpp)
+target_link_libraries(day1 ${Boost_LIBRARIES})
+add_test(day1 day1)
 
 add_executable(day2_part1 day2/day2_part1.cpp)
 add_executable(day2_part2 day2/day2_part2.cpp)
