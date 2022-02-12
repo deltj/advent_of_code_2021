@@ -12,8 +12,9 @@ add_executable(day1 day1.cpp)
 target_link_libraries(day1 ${Boost_LIBRARIES})
 add_test(day1 day1)
 
-add_executable(day2_part1 day2/day2_part1.cpp)
-add_executable(day2_part2 day2/day2_part2.cpp)
+add_executable(day2 day2.cpp)
+target_link_libraries(day2 ${Boost_LIBRARIES})
+add_test(day2 day2)
 
 add_executable(day3_part1 day3/day3_part1.cpp)
 add_executable(day3_part2 day3/day3_part2.cpp)
