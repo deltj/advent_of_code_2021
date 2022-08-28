@@ -6,145 +6,137 @@
 #include <boost/test/unit_test.hpp>
 
 #include <fstream>
-#include <list>
-#include <numeric>
 #include <string>
 
-class Sonar
+/**
+ * @brief Count the number of measurements that are larger than the previous measurement
+ * 
+ * Running time is O(n)
+ * 
+ * @param measurements A vector of measurements
+ * @return The number of increasing measurements
+ */
+int CountIncreasingMeasurements(const std::vector<int> &measurements)
 {
-public:
-    Sonar() : inc(0) {}
-
-    void addMeasurement(const int &measurement)
+    int inc = 0;
+    for(size_t i=1; i<measurements.size(); i++)
     {
-        static int previous_measurement = 0;
-
-        if(previous_measurement != 0 && measurement > previous_measurement)
+        if(measurements[i] > measurements[i - 1])
         {
             inc++;
         }
-
-        previous_measurement = measurement;
     }
+    return inc;
+}
 
-    void addMeasurementWindowed(const int &measurement)
+/**
+ * @brief Count the number of measurements using a three-measurement sliding window
+ * 
+ * Running time is O(n)
+ * 
+ * @param measurements A vector of measurements
+ * @return The number of increasing measurements
+ */
+int CountIncreasingMeasurementsWin(const std::vector<int> &measurements)
+{
+    int inc = 0;
+    for(size_t i=3; i<measurements.size(); i++)
     {
-        static std::list<int> window;
-        static int previous_window_sum = 0;
-
-        window.push_front(measurement);
-
-        if(window.size() != 3)
-        {
-            return;
-        }
-
-        const int window_sum = std::accumulate(window.begin(), window.end(), 0);
-
-        window.pop_back();
-
-        if(previous_window_sum != 0 && window_sum > previous_window_sum)
+        int prev_win_sum = measurements[i - 3] + measurements[i - 2] + measurements[i - 1];
+        int this_win_sum = measurements[i - 2] + measurements[i - 1] + measurements[i];
+        if(this_win_sum > prev_win_sum)
         {
             inc++;
         }
-
-        previous_window_sum = window_sum;
     }
-
-    int getIncreasingMeasurementCount() const { return inc; }
-
-private:
-    int inc;
-};
+    return inc;
+}
 
 BOOST_AUTO_TEST_CASE( day1_part1_example )
 {
-    Sonar s;
-
     //  Test with example input
     std::ifstream ifs("../day1_example_input", std::ifstream::in);
     BOOST_REQUIRE(ifs.is_open());
 
     std::string line;
     int measurement = 0;
+    std::vector<int> measurements;
 
     //  Read the input file one line at a time
     while(std::getline(ifs, line))
     {
         measurement = boost::lexical_cast<int>(line);
-        s.addMeasurement(measurement);
+        measurements.push_back(measurement);
     }
-
-    BOOST_CHECK_EQUAL(7, s.getIncreasingMeasurementCount());
-
     ifs.close();
+
+    int increasing_measurement_count = CountIncreasingMeasurements(measurements);
+
+    BOOST_CHECK_EQUAL(7, increasing_measurement_count);
 }
 
 BOOST_AUTO_TEST_CASE( day1_part1_actual )
 {
-    Sonar s;
-
     //  Test with real input
     std::ifstream ifs("../day1_input", std::ifstream::in);
     BOOST_REQUIRE(ifs.is_open());
 
     std::string line;
     int measurement = 0;
+    std::vector<int> measurements;
 
     //  Read the input file one line at a time
     while(std::getline(ifs, line))
     {
         measurement = boost::lexical_cast<int>(line);
-        s.addMeasurement(measurement);
+        measurements.push_back(measurement);
     }
-
-    BOOST_CHECK_EQUAL(1466, s.getIncreasingMeasurementCount());
-
     ifs.close();
+
+    int increasing_measurement_count = CountIncreasingMeasurements(measurements);
+    BOOST_CHECK_EQUAL(1466, increasing_measurement_count);
 }
 
 BOOST_AUTO_TEST_CASE( day1_part2_example )
 {
-    Sonar s;
-
     //  Test with example input
     std::ifstream ifs("../day1_example_input", std::ifstream::in);
     BOOST_REQUIRE(ifs.is_open());
 
     std::string line;
     int measurement = 0;
+    std::vector<int> measurements;
 
     //  Read the input file one line at a time
     while(std::getline(ifs, line))
     {
         measurement = boost::lexical_cast<int>(line);
-        s.addMeasurementWindowed(measurement);
+        measurements.push_back(measurement);
     }
-
-    BOOST_CHECK_EQUAL(5, s.getIncreasingMeasurementCount());
-
     ifs.close();
+
+    int increasing_measurement_count = CountIncreasingMeasurementsWin(measurements);
+    BOOST_CHECK_EQUAL(5, increasing_measurement_count);
 }
 
 BOOST_AUTO_TEST_CASE( day1_part2_actual )
 {
-    Sonar s;
-
     //  Test with real input
     std::ifstream ifs("../day1_input", std::ifstream::in);
     BOOST_REQUIRE(ifs.is_open());
 
     std::string line;
     int measurement = 0;
+    std::vector<int> measurements;
 
     //  Read the input file one line at a time
     while(std::getline(ifs, line))
     {
         measurement = boost::lexical_cast<int>(line);
-        s.addMeasurementWindowed(measurement);
+        measurements.push_back(measurement);
     }
-
-    BOOST_CHECK_EQUAL(1491, s.getIncreasingMeasurementCount());
-
     ifs.close();
+
+    int increasing_measurement_count = CountIncreasingMeasurementsWin(measurements);
+    BOOST_CHECK_EQUAL(1491, increasing_measurement_count);    
 }
