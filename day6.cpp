@@ -19,7 +19,9 @@ public:
     {
         //  Initialize the fish vector
         for(int i=0; i<9; i++)
+        {
             initial_fish.push_back(0);
+        }
     }
 
     void readInitialState(const std::string &stateString)
@@ -27,27 +29,14 @@ public:
         std::vector<std::string> tokens;
         boost::split(tokens, stateString, boost::is_any_of(","));
 
-        //double p0 = 0;
         for(std::vector<std::string>::const_iterator it=tokens.begin(); it!=tokens.end(); ++it)
         {
-            //p0++;
-
             int age = boost::lexical_cast<int>(*it);
             initial_fish[age] += 1;
         }
-        fish = initial_fish;
-
-        //  p(t) = p(0) * e^kt
-        //  26 = p(0) * e^18k
-        //  26 / p(0) = e^18k
-        //  ln(26 / p(0)) = 18k
-        //  ln(26 / p(0)) / 18 = k
-        //double k1 = log(26.0 / p0) / 18.0;
-        //double k2 = log(5934.0 / p0) / 80.0;
-        //  This method doesn't work; We end up with two different growth rates and no solution
     }
 
-    uint64_t calc(const double t)
+    uint64_t calc(const int t)
     {
         fish.clear();
         fish = initial_fish;
@@ -56,12 +45,14 @@ public:
         {
             //  Shift the number of fish at each age down by a day
             uint64_t tmp = fish[0];
-            for(int age=0; age<9; age++)
+            for(int age=0; age<8; age++)
             {
                 fish[age] = fish[age + 1];
             }
+
+            //  Fish with zero days left reset to 6 days, and create a new 8 day fish
             fish[6] += tmp;
-            fish[8] += tmp;
+            fish[8] = tmp;
         }
 
         uint64_t total_fish = 0;
@@ -71,7 +62,6 @@ public:
         }
 
         return total_fish;
-        //return p0 * exp(k * t);
     }
 
     void printFish() const
@@ -100,8 +90,10 @@ BOOST_AUTO_TEST_CASE( day6_part1_example )
 
     LanternFishReproductiveModel lfrm;
     lfrm.readInitialState(line);
-    //lfrm.printFish();
-    //lfrm.calc(2);
+    lfrm.calc(1);
+    BOOST_CHECK_EQUAL(5, lfrm.calc(1));
+    BOOST_CHECK_EQUAL(6, lfrm.calc(2));
+    BOOST_CHECK_EQUAL(7, lfrm.calc(3));
     //lfrm.printFish();
 
     BOOST_CHECK_EQUAL(26, lfrm.calc(18));
