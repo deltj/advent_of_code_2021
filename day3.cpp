@@ -20,7 +20,7 @@ public:
             csr(0)
     {
         //  Zeroize the sum to start
-        for(int i=0; i<report_size; i++)
+        for(size_t i=0; i<report_size; i++)
         {
             bit_sum.push_back(0);
         }
@@ -33,7 +33,7 @@ public:
         int decimal_report = 0;
 
         //  Consider each bit in the input
-        for(int i=0; i<report_size; i++)
+        for(size_t i=0; i<report_size; i++)
         {
             const int bit = boost::lexical_cast<int>(report.at(i));
 
@@ -56,7 +56,7 @@ public:
     {
         gamma_rate = 0;
 
-        for(int i=0; i<report_size; i++)
+        for(size_t i=0; i<report_size; i++)
         {
             //  I'm using an average to find the most common bit value
             const int most_common_bit_value = bit_sum[i] > (num_reports / 2) ? 1 : 0;
@@ -75,7 +75,7 @@ public:
         //  copy input, then filter it down for oxygen generator rating calculation
         std::vector<int> ogr_input = input;
 
-        for(int bitnum=1; bitnum<=report_size; bitnum++)
+        for(size_t bitnum=1; bitnum<=report_size; bitnum++)
         {
             const int shift_amt = report_size - bitnum;
             int ones = 0;
@@ -110,7 +110,7 @@ public:
         //  copy input, then filter it down for CO2 scrubber rating calculation
         std::vector<int> csr_input = input;
 
-        for(int bitnum=1; bitnum<=report_size; bitnum++)
+        for(size_t bitnum=1; bitnum<=report_size; bitnum++)
         {
             const int shift_amt = report_size - bitnum;
             int ones = 0;
@@ -158,7 +158,7 @@ private:
     //  (so bit_sum[i] contains the sum of the ith bits from each number)
     std::vector<int> bit_sum;
 
-    int report_size;
+    size_t report_size;
     int num_reports;
     int gamma_rate;
     int epsilon_rate;
