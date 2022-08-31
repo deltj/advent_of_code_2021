@@ -1,5 +1,5 @@
 
-#define BOOST_TEST_MODULE Day6
+#define BOOST_TEST_MODULE Day7
 #define BOOST_TEST_DYN_LINK
 
 #include <boost/algorithm/string.hpp>
