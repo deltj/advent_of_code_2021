@@ -25,9 +25,9 @@ public:
      * The symbols before the pipe are observed signal patterns, and the symbols after the
      * pipe are a four digit output value.
      * 
-     * @param ifs The stream to read from
+     * @param is The input stream to read from
      */
-    void readInput(std::ifstream &ifs)
+    void readInput(std::istream &is)
     {
         signalPatterns.clear();
         output.clear();
@@ -37,7 +37,7 @@ public:
         std::vector<std::string> tokens2;
         std::vector<std::string> tokens3;
 
-        while(std::getline(ifs, line))
+        while(std::getline(is, line))
         {
             tokens1.clear();
             boost::split(tokens1, line, boost::is_any_of("|"));
@@ -99,6 +99,19 @@ public:
         return unique_digits;
     }
 
+    bool mapIsComplete(std::map<int, std::string> dmap)
+    {
+        std::cout << "mapsize: " << dmap.size() << std::endl;
+        for(int i=0; i<10; i++)
+        {
+            if(dmap.find(i) == dmap.end())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     std::map<std::string, int> buildPatternMap(std::vector<std::string> patterns)
     {
         std::map<std::string, int> patternToDigit;
@@ -134,6 +147,8 @@ public:
             }
         }
 
+        //  Known: 1, 4, 7, 8
+
         for(auto p : patterns)
         {
             if(p.length() == 5)
@@ -152,16 +167,18 @@ public:
                 if(std::includes(p.begin(), p.end(), digitToPattern[4].begin(), digitToPattern[4].end()))
                 {
                     patternToDigit[p] = 9;
-                    digitToPattern[3] = p;
+                    digitToPattern[9] = p;
                 }
             }
         }
 
-        //  Segment d is in 3 and not 8
+        //  Known: 1, 3, 4, 7, 8, 9
+
+        //  Segment d is in 3 and 4 but not 7
         char d;
         for(auto ch : digitToPattern[3])
         {
-            if(digitToPattern[8].find(ch) != std::string::npos)
+            if(digitToPattern[4].find(ch) != std::string::npos && digitToPattern[7].find(ch) == std::string::npos)
             {
                 d = ch;
             }
@@ -176,6 +193,8 @@ public:
                 digitToPattern[0] = p;
             }
         }
+
+        //  Known: 0, 1, 3, 4, 7, 8, 9
 
         //  Six is the only 6-segment digit left
         for(auto p : patterns)
@@ -192,7 +211,7 @@ public:
         char c;
         for(auto ch : digitToPattern[0])
         {
-            if(digitToPattern[6].find(ch) != std::string::npos)
+            if(digitToPattern[6].find(ch) == std::string::npos)
             {
                 c = ch;
             }
@@ -290,6 +309,46 @@ BOOST_AUTO_TEST_CASE( day8_part2_small_example )
     BOOST_CHECK_EQUAL(5353, ssd.getOutputValue(0));
 }
 
+BOOST_AUTO_TEST_CASE( day8_part2_debug1 )
+{
+    const std::string input = "dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe";
+    std::istringstream is(input);
+
+    SevenSegmentData ssd;
+    ssd.readInput(is);
+
+    BOOST_CHECK_EQUAL(1, ssd.numRecords());
+    BOOST_CHECK_EQUAL(4548, ssd.getOutputValue(0));
+
+    /*
+    std::map<std::string, int> pmap = ssd.buildPatternMap(ssd.signalPatterns[0]);
+    for(auto m : pmap)
+    {
+        std::cout << m.first << " = " << m.second << std::endl;
+    }
+    */
+}
+
+BOOST_AUTO_TEST_CASE( day8_part2_debug2 )
+{
+    const std::string input = "bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef";
+    std::istringstream is(input);
+
+    SevenSegmentData ssd;
+    ssd.readInput(is);
+
+    BOOST_CHECK_EQUAL(1, ssd.numRecords());
+    BOOST_CHECK_EQUAL(1625, ssd.getOutputValue(0));
+
+    /*
+    std::map<std::string, int> pmap = ssd.buildPatternMap(ssd.signalPatterns[0]);
+    for(auto m : pmap)
+    {
+        std::cout << m.first << " = " << m.second << std::endl;
+    }
+    */
+}
+
 BOOST_AUTO_TEST_CASE( day8_part2_example )
 {
     //  Test with example input
@@ -310,12 +369,54 @@ BOOST_AUTO_TEST_CASE( day8_part2_example )
     BOOST_CHECK_EQUAL(8418, ssd.getOutputValue(5));
     BOOST_CHECK_EQUAL(4548, ssd.getOutputValue(6));
     BOOST_CHECK_EQUAL(1625, ssd.getOutputValue(7));
-    BOOST_CHECK_EQUAL(8718, ssd.getOutputValue(8));
+    BOOST_CHECK_EQUAL(8717, ssd.getOutputValue(8));
     BOOST_CHECK_EQUAL(4315, ssd.getOutputValue(9));
 
+    /*
     std::map<std::string, int> pmap = ssd.buildPatternMap(ssd.signalPatterns[6]);
     for(auto m : pmap)
     {
         std::cout << m.first << " = " << m.second << std::endl;
     }
+    */
+
+    //  Sum the output values
+    long sum = 0;
+    for(size_t i=0; i<ssd.numRecords(); i++)
+    {
+        sum += ssd.getOutputValue(i);
+    }
+
+    BOOST_CHECK_EQUAL(61229, sum);
+}
+
+BOOST_AUTO_TEST_CASE( day8_part2_actual )
+{
+    //  Test with example input
+    std::ifstream ifs("../day8_input", std::ifstream::in);
+    BOOST_REQUIRE(ifs.is_open());
+
+    SevenSegmentData ssd;
+    ssd.readInput(ifs);
+    ifs.close();
+
+    BOOST_CHECK_EQUAL(200, ssd.numRecords());
+
+    /*
+    std::map<std::string, int> pmap = ssd.buildPatternMap(ssd.signalPatterns[6]);
+    for(auto m : pmap)
+    {
+        std::cout << m.first << " = " << m.second << std::endl;
+    }
+    */
+
+    //  Sum the output values
+    int sum = 0;
+    for(size_t i=0; i<ssd.numRecords(); i++)
+    {
+        //std::cout << ssd.getOutputValue(i) << std::endl;
+        sum += ssd.getOutputValue(i);
+    }
+
+    BOOST_CHECK_EQUAL(1043697, sum);
 }
